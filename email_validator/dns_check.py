@@ -33,6 +33,7 @@ def check_mx_sync(domain: str, timeout: float = 5.0) -> dict:
             "temporary_failure": False,
             "implicit_mx": False,
             "error": "",
+            "failure_reason": "",
         }
     except dns.resolver.NoAnswer:
         # RFC 5321 fallback: if no MX exists, the bare domain may still accept mail.
@@ -46,6 +47,7 @@ def check_mx_sync(domain: str, timeout: float = 5.0) -> dict:
                     "temporary_failure": False,
                     "implicit_mx": True,
                     "error": "",
+                    "failure_reason": "",
                 }
             except (dns.resolver.NoAnswer, dns.resolver.NXDOMAIN):
                 continue
@@ -57,6 +59,9 @@ def check_mx_sync(domain: str, timeout: float = 5.0) -> dict:
                     "temporary_failure": True,
                     "implicit_mx": False,
                     "error": str(exc),
+                    "failure_reason": "dns_nameserver_failure"
+                    if isinstance(exc, dns.resolver.NoNameservers)
+                    else "dns_timeout",
                 }
 
         return {
@@ -66,6 +71,7 @@ def check_mx_sync(domain: str, timeout: float = 5.0) -> dict:
             "temporary_failure": False,
             "implicit_mx": False,
             "error": "No MX, A, or AAAA records found",
+            "failure_reason": "no_dns_mail_route",
         }
     except dns.resolver.NXDOMAIN:
         return {
@@ -75,6 +81,7 @@ def check_mx_sync(domain: str, timeout: float = 5.0) -> dict:
             "temporary_failure": False,
             "implicit_mx": False,
             "error": "Domain does not exist",
+            "failure_reason": "domain_not_found",
         }
     except dns.resolver.NoNameservers as exc:
         return {
@@ -84,6 +91,7 @@ def check_mx_sync(domain: str, timeout: float = 5.0) -> dict:
             "temporary_failure": True,
             "implicit_mx": False,
             "error": str(exc),
+            "failure_reason": "dns_nameserver_failure",
         }
     except dns.exception.Timeout:
         return {
@@ -93,6 +101,7 @@ def check_mx_sync(domain: str, timeout: float = 5.0) -> dict:
             "temporary_failure": True,
             "implicit_mx": False,
             "error": "DNS lookup timed out",
+            "failure_reason": "dns_timeout",
         }
     except Exception as exc:
         return {
@@ -102,6 +111,7 @@ def check_mx_sync(domain: str, timeout: float = 5.0) -> dict:
             "temporary_failure": True,
             "implicit_mx": False,
             "error": str(exc),
+            "failure_reason": "dns_error",
         }
 
 

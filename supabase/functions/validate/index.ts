@@ -198,7 +198,7 @@ async function saveJob(results: ReturnType<typeof computeScore extends infer _ ?
     (a: Record<string, number>, r: { status: string }) => { a[r.status] = (a[r.status] || 0) + 1; return a; },
     {} as Record<string, number>
   );
-  const job = await db.table("validation_jobs").insert({
+  const job = await db.from("validation_jobs").insert({
     job_type: jobType,
     status: "completed",
     total_emails: results.length,
@@ -221,7 +221,7 @@ async function saveJob(results: ReturnType<typeof computeScore extends infer _ ?
       mx_records: r.mx_records, smtp_check: r.smtp_check,
       accept_all: r.accept_all, block: r.block, smtp_server: r.smtp_server ?? null,
     }));
-    await db.table("validation_results").insert(rows);
+    await db.from("validation_results").insert(rows);
   }
   return jobId;
 }
@@ -258,7 +258,7 @@ Deno.serve(async (req: Request) => {
       const limit = parseInt(url.searchParams.get("limit") ?? "20");
       const offset = parseInt(url.searchParams.get("offset") ?? "0");
       const db = getDb();
-      const { data } = await db.table("validation_jobs").select("*")
+      const { data } = await db.from("validation_jobs").select("*")
         .order("created_at", { ascending: false }).range(offset, offset + limit - 1);
       return json({ jobs: data ?? [] });
     }
@@ -268,9 +268,9 @@ Deno.serve(async (req: Request) => {
     if (req.method === "GET" && jobMatch) {
       const jobId = jobMatch[1];
       const db = getDb();
-      const { data: job } = await db.table("validation_jobs").select("*").eq("id", jobId).maybeSingle();
+      const { data: job } = await db.from("validation_jobs").select("*").eq("id", jobId).maybeSingle();
       if (!job) return err("Job not found", 404);
-      const { data: results } = await db.table("validation_results").select("*").eq("job_id", jobId);
+      const { data: results } = await db.from("validation_results").select("*").eq("job_id", jobId);
       return json({ job, results: results ?? [] });
     }
 
@@ -279,7 +279,7 @@ Deno.serve(async (req: Request) => {
     if (req.method === "GET" && dlMatch) {
       const jobId = dlMatch[1];
       const db = getDb();
-      const { data } = await db.table("validation_results").select("*").eq("job_id", jobId);
+      const { data } = await db.from("validation_results").select("*").eq("job_id", jobId);
       if (!data?.length) return err("No results found", 404);
       const fields = ["email","status","score","failure_reason","regexp","gibberish","disposable","webmail","role_based","mx_records","smtp_check","accept_all","block","smtp_server"];
       const header = fields.join(",");

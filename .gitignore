@@ -7,3 +7,4 @@ dist/
 *.egg-info/
 *-validated.csv
 .DS_Store
+.env

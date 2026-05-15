@@ -1,0 +1,25 @@
+[build-system]
+requires = ["setuptools>=68", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "email-validator-local"
+version = "1.1.0"
+description = "Free local email validation with syntax, disposable, role, DNS/MX, and SMTP checks."
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "dnspython>=2.6,<3",
+]
+
+[project.scripts]
+email-validator = "email_validator.cli:main"
+
+[tool.setuptools]
+include-package-data = true
+
+[tool.setuptools.packages.find]
+include = ["email_validator*"]
+
+[tool.setuptools.package-data]
+email_validator = ["data/*.txt"]

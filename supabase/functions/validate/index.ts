@@ -90,7 +90,7 @@ async function checkMx(domain: string): Promise<{ hasMx: boolean; hosts: string[
       }
       return { hasMx: false, hosts: [], error: "no_dns_mail_route" };
     }
-    const hosts = mxAnswers.map((a) => a.data.replace(/\s+\S+$/, "").replace(/\.$/, "").trim());
+    const hosts = mxAnswers.map((a) => a.data.replace(/^\d+\s+/, "").replace(/\.$/, "").trim());
     return { hasMx: true, hosts };
   } catch (e) {
     return { hasMx: false, hosts: [], error: "dns_timeout" };

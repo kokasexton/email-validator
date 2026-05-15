@@ -22,7 +22,7 @@ def _probe_accept_all(smtp: smtplib.SMTP, domain: str) -> bool:
 def verify_smtp_sync(email: str, mx_hosts: list[str], timeout: float = 10.0) -> dict:
     """
     Verify email via SMTP handshake.
-    Returns {smtp_check, smtp_server, accept_all, block, error, temporary_failure}.
+    Returns {smtp_check, smtp_server, accept_all, block, error, temporary_failure, failure_reason}.
     """
     if not mx_hosts:
         return {
@@ -32,9 +32,11 @@ def verify_smtp_sync(email: str, mx_hosts: list[str], timeout: float = 10.0) -> 
             "block": True,
             "temporary_failure": True,
             "error": "No MX hosts",
+            "failure_reason": "smtp_no_mx_hosts",
         }
 
     error = ""
+    failure_reason = "smtp_connection_failed"
     domain = email.rsplit("@", 1)[-1]
     for mx in mx_hosts:
         smtp = None
@@ -70,6 +72,7 @@ def verify_smtp_sync(email: str, mx_hosts: list[str], timeout: float = 10.0) -> 
                     "block": False,
                     "temporary_failure": False,
                     "error": "",
+                    "failure_reason": "",
                 }
             if code in (550, 551, 552, 553):
                 smtp.quit()
@@ -80,25 +83,31 @@ def verify_smtp_sync(email: str, mx_hosts: list[str], timeout: float = 10.0) -> 
                     "block": False,
                     "temporary_failure": False,
                     "error": f"Rejected: {code} {_decode_smtp_message(msg)}",
+                    "failure_reason": "smtp_rejected_mailbox",
                 }
             smtp.quit()
 
             if code in (450, 451, 452):
                 # Temporary failure — try next MX
                 error = f"Temp fail: {code} {_decode_smtp_message(msg)}"
+                failure_reason = "smtp_greylisted"
                 continue
 
             error = f"Unexpected: {code} {_decode_smtp_message(msg)}"
+            failure_reason = "smtp_unexpected_response"
             continue
 
         except (socket.timeout, socket.error, ConnectionRefusedError, OSError) as e:
             error = str(e)
+            failure_reason = "smtp_connection_failed"
             continue
         except smtplib.SMTPException as e:
             error = str(e)
+            failure_reason = "smtp_protocol_error"
             continue
         except Exception as e:
             error = str(e)
+            failure_reason = "smtp_error"
             continue
         finally:
             if smtp is not None:
@@ -115,6 +124,7 @@ def verify_smtp_sync(email: str, mx_hosts: list[str], timeout: float = 10.0) -> 
         "block": True,
         "temporary_failure": True,
         "error": f"All MX failed: {error}" if error else "All MX failed",
+        "failure_reason": failure_reason,
     }
 
 

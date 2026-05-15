@@ -51,6 +51,7 @@ class SmtpVerificationTests(unittest.TestCase):
         self.assertTrue(result["smtp_check"])
         self.assertTrue(result["accept_all"])
         self.assertFalse(result["block"])
+        self.assertEqual(result["failure_reason"], "")
 
     @patch("email_validator.smtp_check.smtplib.SMTP", side_effect=RejectingSMTP)
     def test_rejected_mailbox_is_reported(self, mock_smtp_cls):
@@ -59,6 +60,7 @@ class SmtpVerificationTests(unittest.TestCase):
         self.assertTrue(result["smtp_check"])
         self.assertIn("Rejected: 550", result["error"])
         self.assertFalse(result["block"])
+        self.assertEqual(result["failure_reason"], "smtp_rejected_mailbox")
 
     @patch("email_validator.smtp_check.smtplib.SMTP", side_effect=TempFailureSMTP)
     def test_temporary_failures_fall_back_to_unknown(self, mock_smtp_cls):
@@ -67,3 +69,4 @@ class SmtpVerificationTests(unittest.TestCase):
         self.assertFalse(result["smtp_check"])
         self.assertTrue(result["temporary_failure"])
         self.assertTrue(result["block"])
+        self.assertEqual(result["failure_reason"], "smtp_greylisted")

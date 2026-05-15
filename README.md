@@ -61,6 +61,9 @@ email-validator leads.csv --no-smtp
 
 # Custom timeouts
 email-validator leads.csv --dns-timeout 3 --smtp-timeout 8
+
+# Safer SMTP pacing for large same-domain lists
+email-validator leads.csv --max-smtp-per-domain 2 --smtp-retries 2 --smtp-retry-backoff 1.0
 ```
 
 ## Input expectations
@@ -104,6 +107,7 @@ The output CSV includes:
 
 - `email`
 - `status`
+- `failure_reason`
 - `regexp`
 - `gibberish`
 - `disposable`
@@ -115,6 +119,128 @@ The output CSV includes:
 - `block`
 - `score`
 - `role_based`
+
+## VPS install
+
+If you want real SMTP verification at scale, run this on a VPS where outbound port `25` is allowed.
+
+### 1. Provision a Linux VPS
+
+- Recommended: Ubuntu `22.04` or `24.04`
+- Minimum practical size: `1 vCPU`, `1 GB RAM`
+- Best results: use a provider that does not block outbound SMTP by default, or will remove the block on request
+
+### 2. SSH into the box
+
+```bash
+ssh your-user@your-vps-ip
+```
+
+### 3. Install system packages
+
+```bash
+sudo apt update
+sudo apt install -y git python3 python3-venv python3-pip
+```
+
+### 4. Clone the repo
+
+```bash
+git clone https://github.com/kokasexton/email-validator.git
+cd email-validator
+```
+
+### 5. Create the virtualenv and install dependencies
+
+```bash
+python3 -m venv .venv
+source .venv/bin/activate
+pip install --upgrade pip
+pip install -r requirements.txt
+pip install -e .
+```
+
+### 6. Confirm outbound SMTP is actually possible
+
+This matters more than anything else. If port `25` is blocked, full SMTP mode will mostly return `unknown`.
+
+Quick check:
+
+```bash
+python3 - <<'PY'
+import socket
+sock = socket.socket()
+sock.settimeout(5)
+try:
+    sock.connect(("gmail-smtp-in.l.google.com", 25))
+    print("port 25 reachable")
+except Exception as exc:
+    print(f"port 25 blocked or unreachable: {exc}")
+finally:
+    sock.close()
+PY
+```
+
+### 7. Upload your CSV and run the validator
+
+```bash
+scp leads.csv your-user@your-vps-ip:~/email-validator/
+ssh your-user@your-vps-ip
+cd ~/email-validator
+source .venv/bin/activate
+email-validator leads.csv -o validated.csv -w 20 --max-smtp-per-domain 2
+```
+
+### 8. Download the results
+
+```bash
+scp your-user@your-vps-ip:~/email-validator/validated.csv .
+```
+
+### 9. Optional: run long jobs with `tmux`
+
+```bash
+sudo apt install -y tmux
+tmux new -s validator
+cd ~/email-validator
+source .venv/bin/activate
+email-validator leads.csv -o validated.csv -w 20
+```
+
+Detach with `Ctrl+B`, then `D`.
+
+### 10. Optional: install as a systemd service for recurring runs
+
+Create `/etc/systemd/system/email-validator.service`:
+
+```ini
+[Unit]
+Description=Email Validator Batch Run
+After=network-online.target
+
+[Service]
+Type=oneshot
+User=your-user
+WorkingDirectory=/home/your-user/email-validator
+ExecStart=/home/your-user/email-validator/.venv/bin/email-validator /home/your-user/email-validator/leads.csv -o /home/your-user/email-validator/validated.csv -w 20 --max-smtp-per-domain 2
+
+[Install]
+WantedBy=multi-user.target
+```
+
+Then run:
+
+```bash
+sudo systemctl daemon-reload
+sudo systemctl start email-validator.service
+sudo systemctl status email-validator.service
+```
+
+### VPS notes
+
+- Start with `--max-smtp-per-domain 1` or `2` for cold domains to avoid rate-limit pain
+- If you see many `smtp_greylisted` or `smtp_connection_failed` results, lower concurrency before you raise it
+- If your provider blocks port `25`, this tool is still useful in `--no-smtp` mode, but you lose mailbox-level confirmation
 
 ## Development
 

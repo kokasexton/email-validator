@@ -1,0 +1,6 @@
+.badge { display: inline-flex; align-items: center; border-radius: 20px; font-weight: 600; font-size: 12px; padding: 3px 10px; white-space: nowrap; }
+.sm { font-size: 11px; padding: 2px 8px; }
+.valid { background: var(--success-50); color: var(--success-700); border: 1px solid var(--success-100); }
+.invalid { background: var(--error-50); color: var(--error-600); border: 1px solid var(--error-100); }
+.accept_all { background: var(--warning-50); color: var(--warning-600); border: 1px solid var(--warning-100); }
+.unknown { background: var(--neutral-100); color: var(--neutral-500); border: 1px solid var(--neutral-200); }

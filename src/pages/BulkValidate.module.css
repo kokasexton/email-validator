@@ -1,0 +1,70 @@
+.page { padding: 32px; max-width: 960px; display: flex; flex-direction: column; gap: 18px; }
+.title { font-size: 22px; font-weight: 700; color: var(--neutral-900); letter-spacing: -.4px; }
+.sub { font-size: 13px; color: var(--neutral-500); margin-top: 3px; }
+
+.card { background: #fff; border: 1px solid var(--neutral-200); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
+.tabs { display: flex; border-bottom: 1px solid var(--neutral-200); padding: 0 18px; }
+.tab { display: flex; align-items: center; gap: 5px; padding: 11px 14px; font-size: 13px; font-weight: 500; color: var(--neutral-500); background: none; border: none; border-bottom: 2px solid transparent; cursor: pointer; margin-bottom: -1px; transition: color .13s; }
+.tab:hover { color: var(--neutral-700); }
+.activeTab { color: var(--primary-600); border-bottom-color: var(--primary-500); }
+.form { padding: 18px; display: flex; flex-direction: column; gap: 12px; }
+
+.drop { border: 2px dashed var(--neutral-200); border-radius: var(--radius-lg); padding: 28px 20px; cursor: pointer; background: var(--neutral-50); transition: all .13s; display: flex; align-items: center; justify-content: center; }
+.drop:hover, .dragging { border-color: var(--primary-400); background: var(--primary-50); }
+.hasFile { border-style: solid; border-color: var(--success-500); background: var(--success-50); padding: 14px 20px; }
+.dropInner { display: flex; flex-direction: column; align-items: center; gap: 6px; }
+.dropIcon { color: var(--neutral-400); }
+.dropText { font-size: 13px; color: var(--neutral-600); }
+.browse { color: var(--primary-600); font-weight: 500; }
+.dropHint { font-size: 11px; color: var(--neutral-400); }
+.fileRow { display: flex; align-items: center; gap: 10px; width: 100%; }
+.fileIcon { color: var(--success-600); flex-shrink: 0; }
+.fileName { font-size: 13px; font-weight: 600; color: var(--neutral-800); }
+.fileSize { font-size: 11px; color: var(--neutral-400); }
+.clear { margin-left: auto; background: none; border: none; color: var(--neutral-400); cursor: pointer; padding: 3px; border-radius: 4px; display: flex; }
+.clear:hover { color: var(--error-500); background: var(--error-50); }
+
+.textarea { width: 100%; border: 1px solid var(--neutral-200); border-radius: var(--radius-md); padding: 10px; font-size: 12px; font-family: var(--font-mono); color: var(--neutral-700); resize: vertical; outline: none; background: var(--neutral-50); }
+.textarea:focus { border-color: var(--primary-400); background: #fff; }
+
+.formFoot { display: flex; align-items: center; justify-content: space-between; }
+.check { display: flex; align-items: center; gap: 6px; font-size: 12px; color: var(--neutral-600); cursor: pointer; }
+.check input { accent-color: var(--primary-500); }
+.btn { display: flex; align-items: center; gap: 6px; background: var(--primary-600); color: #fff; border: none; border-radius: var(--radius-md); padding: 8px 18px; font-size: 13px; font-weight: 600; transition: background .13s; }
+.btn:hover:not(:disabled) { background: var(--primary-700); }
+.btn:disabled { opacity: .6; cursor: not-allowed; }
+
+.errCard { background: var(--error-50); border: 1px solid var(--error-100); border-radius: var(--radius-md); padding: 10px 14px; font-size: 13px; color: var(--error-600); }
+
+.results { background: #fff; border: 1px solid var(--neutral-200); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
+.summary { display: grid; grid-template-columns: repeat(4,1fr); border-bottom: 1px solid var(--neutral-100); }
+.sumCard { padding: 14px 18px; border-right: 1px solid var(--neutral-100); }
+.sumCard:last-child { border-right: none; }
+.sumNum { font-size: 26px; font-weight: 700; font-family: var(--font-mono); letter-spacing: -1px; }
+.sumLbl { font-size: 10px; color: var(--neutral-500); font-weight: 500; margin-top: 2px; text-transform: capitalize; }
+.sumBar { margin-top: 7px; height: 3px; background: var(--neutral-100); border-radius: 2px; overflow: hidden; }
+.sumFill { height: 100%; border-radius: 2px; transition: width .4s ease; }
+
+.tableHdr { display: flex; align-items: center; justify-content: space-between; padding: 10px 18px; border-bottom: 1px solid var(--neutral-100); background: var(--neutral-50); }
+.tableHdrL { display: flex; align-items: center; gap: 10px; }
+.count { font-size: 12px; font-weight: 600; color: var(--neutral-700); }
+.fname { font-size: 11px; color: var(--neutral-400); font-family: var(--font-mono); }
+.dlBtn { display: flex; align-items: center; gap: 5px; background: none; border: 1px solid var(--neutral-200); border-radius: var(--radius-md); padding: 5px 10px; font-size: 11px; font-weight: 500; color: var(--neutral-600); cursor: pointer; transition: all .13s; }
+.dlBtn:hover { border-color: var(--primary-400); color: var(--primary-600); background: var(--primary-50); }
+
+.tableBody { max-height: 480px; overflow-y: auto; }
+.thead { display: grid; grid-template-columns: 1fr 90px 110px 110px 20px; gap: 8px; padding: 7px 18px; font-size: 10px; font-weight: 700; color: var(--neutral-400); text-transform: uppercase; letter-spacing: .5px; position: sticky; top: 0; background: #fff; border-bottom: 1px solid var(--neutral-100); z-index: 1; }
+.trow { display: grid; grid-template-columns: 1fr 90px 110px 110px 20px; gap: 8px; padding: 9px 18px; align-items: center; border-bottom: 1px solid var(--neutral-50); cursor: pointer; transition: background .1s; }
+.trow:hover { background: var(--neutral-50); }
+.emailCell { font-size: 12px; font-family: var(--font-mono); color: var(--neutral-800); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.scoreCell { min-width: 0; }
+.reasonCell { font-size: 11px; color: var(--neutral-500); text-transform: capitalize; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.chevron { color: var(--neutral-300); display: flex; align-items: center; justify-content: flex-end; }
+
+.expanded { padding: 8px 18px 12px; background: var(--neutral-50); border-bottom: 1px solid var(--neutral-100); display: flex; flex-wrap: wrap; gap: 5px; }
+.flag { font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 10px; }
+.fOk { background: var(--success-50); color: var(--success-700); }
+.fFail { background: var(--error-50); color: var(--error-600); }
+.fWarn { background: var(--warning-50); color: var(--warning-600); }
+
+@keyframes spin { to { transform: rotate(360deg); } }

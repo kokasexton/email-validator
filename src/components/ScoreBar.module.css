@@ -1,0 +1,10 @@
+.wrap { display: flex; align-items: center; gap: 8px; }
+.track { flex: 1; height: 5px; background: var(--neutral-200); border-radius: 3px; overflow: hidden; }
+.fill { height: 100%; border-radius: 3px; transition: width .4s ease; }
+.fill.good { background: var(--success-500); }
+.fill.mid  { background: var(--warning-500); }
+.fill.poor { background: var(--error-500); }
+.num { font-size: 11px; font-weight: 700; font-family: var(--font-mono); min-width: 22px; text-align: right; }
+.num.good { color: var(--success-600); }
+.num.mid  { color: var(--warning-600); }
+.num.poor { color: var(--error-600); }

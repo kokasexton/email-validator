@@ -46,6 +46,7 @@ class ResolverFallbackTests(unittest.TestCase):
         self.assertFalse(result["mx_records"])
         self.assertTrue(result["temporary_failure"])
         self.assertIn("timed out", result["error"].lower())
+        self.assertEqual(result["failure_reason"], "dns_timeout")
 
     @patch("email_validator.dns_check.dns.resolver.Resolver")
     def test_mx_records_are_sorted_by_preference(self, mock_resolver_cls):
